@@ -99,6 +99,7 @@ select:focus-visible{outline:2px solid var(--accent);outline-offset:1px}
   <p class="foot">Expected rates are for the homes in each map not yet knocked since 1 June 2026 (homes in buildings reported as no access or letterbox only are left out). They come from each household's age mix, size, gender mix, ancestry (inferred from names), unit/house and any 2022 conversation, from a model fitted on every Northern Metro district's knocks with the effect of individual volunteers removed, then blended with each suburb's actual Kalkallo results so far in proportion to doors answered (points of support: Craigieburn −1.6, Mickleham +0.3, Kalkallo +3.1, Beveridge +1.0, Wallan +0.0). One result per enrolled dwelling, each unit counted. Maps crossing a suburb boundary sit in the suburb most of their enrolled homes are in. Maps with fewer than 10 enrolled homes are greyed out. The default ranking is the expected score per answered door: supporters, plus each neutral answer (a 3 or busy) counted as part of a supporter in proportion to the household's lean (support ÷ (support + opposition)), averaging a quarter of a supporter. A map is finished when 95% or more of its enrolled homes have been knocked since 1 June 2026, or fewer than 5 are left (as on the progress map).</p>
 </div>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
+<script>if (window.L) L.Map.addInitHook(function () { (window.__lmaps = window.__lmaps || []).push(this); });</script>
 <link rel="stylesheet" href="https://unpkg.com/maplibre-gl@4.7.1/dist/maplibre-gl.css">
 <script src="https://unpkg.com/maplibre-gl@4.7.1/dist/maplibre-gl.js"></script>
 <script src="https://unpkg.com/@maplibre/maplibre-gl-leaflet@0.0.22/leaflet-maplibre-gl.js"></script>
@@ -242,6 +243,36 @@ document.getElementById('toggle').onclick=()=>card.classList.remove('collapsed')
 document.getElementById('close').onclick=()=>card.classList.add('collapsed');
 if(window.innerWidth<=640) card.classList.add('collapsed');
 redraw();
+</script>
+<style>
+.vpin { display:flex; align-items:center; justify-content:center; font:800 10px/1 'Public Sans', Arial, sans-serif; color:#fff; }
+.vpin.evc { width:34px; height:34px; border-radius:50%; background:#b0127a; border:3px solid #fff; box-shadow:0 0 0 2px #b0127a, 0 2px 8px rgba(0,0,0,.45); letter-spacing:.02em; }
+.vpin.vc { width:16px; height:16px; border-radius:4px; background:#fff; border:2.5px solid #1d2b36; color:#1d2b36; font-size:8px; box-shadow:0 1px 3px rgba(0,0,0,.35); }
+.vleg { background:rgba(255,255,255,.94); color:#18222c; padding:7px 10px; border-radius:8px; font:12px/1.5 'Public Sans', Arial, sans-serif; box-shadow:0 1px 4px rgba(0,0,0,.3); }
+.vleg div { display:flex; align-items:center; gap:7px; } .vleg .vpin.evc { width:18px; height:18px; border-width:2px; font-size:6px; box-shadow:0 0 0 1px #b0127a; } .vleg .vpin.vc { width:12px; height:12px; border-width:2px; }
+.vtip b { font-size:13px; } .vtip .k { color:#b0127a; font-weight:700; }
+</style>
+<script>
+(function () {
+  const V = [{"t":"evc","n":"Yellowbox Drive Voting Centre","a":"23 Yellowbox Drive, Craigieburn","v":2059,"lat":-37.61863,"lon":144.94401,"also":false},{"t":"evc","n":"Roxburgh Park Football Club","a":"Lakeside Reserve, Roxburgh Park","v":1893,"lat":-37.6302,"lon":144.93089,"also":false},{"t":"evc","n":"Gilgai Plains Scout Hall","a":"31 Toyon Road, Kalkallo","v":8165,"lat":-37.5339,"lon":144.9592,"also":true},{"t":"evc","n":"North Victorian Buddhist Association","a":"1690 Mickleham Road, Mickleham","v":15904,"lat":-37.57704,"lon":144.87564,"also":true},{"t":"evc","n":"Wandong Public Hall","a":"19 Rail Street, Wandong","v":2137,"lat":-37.35649,"lon":145.02773,"also":false},{"t":"vc","n":"Beveridge Primary School - Ambrosia Campus","l":"Beveridge","a":"30 Ambrosia Way, Beveridge","v":2017,"lat":-37.46955,"lon":144.95466},{"t":"vc","n":"Yubup Primary School","l":"Botanical","a":"120 Ellscott Boulevard, Mickleham","v":1290,"lat":-37.54351,"lon":144.89729},{"t":"vc","n":"Our Lady's Primary School (Craigieburn)","l":"Craigieburn","a":"169-171 Craigieburn Road, Craigieburn","v":1086,"lat":-37.59859,"lon":144.93039},{"t":"vc","n":"Craigieburn Primary School","l":"Craigieburn Central","a":"87-91 Grand Boulevard, Craigieburn","v":1490,"lat":-37.5774,"lon":144.938},{"t":"vc","n":"Aitken Creek Primary School","l":"Craigieburn North West","a":"51-81 Grevillea Street, Craigieburn","v":1463,"lat":-37.58227,"lon":144.90733},{"t":"vc","n":"Craigieburn Secondary College","l":"Craigieburn South","a":"102 Hothlyn Drive, Craigieburn","v":411,"lat":-37.61123,"lon":144.93492},{"t":"vc","n":"Willmott Park Primary School","l":"Craigieburn West","a":"Corner Dorchester Street and Cowes Street, Craigieburn","v":1191,"lat":-37.5923,"lon":144.9224},{"t":"vc","n":"Elevation Secondary College","l":"Elevation","a":"199 Elevation Boulevard, Craigieburn","v":1434,"lat":-37.59782,"lon":144.88909},{"t":"vc","n":"Banum Warrik Primary School","l":"Kalkallo","a":"2 Koeks Vista, Kalkallo","v":828,"lat":-37.52057,"lon":144.95498},{"t":"vc","n":"Newbury Primary School","l":"Mickleham","a":"202-226 Newbury Boulevard, Craigieburn","v":1464,"lat":-37.57174,"lon":144.90968},{"t":"vc","n":"Gaayip-Yagila Primary School","l":"Mickleham North","a":"115 Blackmore Road, Mickleham","v":1503,"lat":-37.52908,"lon":144.90931},{"t":"vc","n":"Mount Ridley P-12 College","l":"Mount Ridley","a":"2-30 Hampton Street, Craigieburn","v":1404,"lat":-37.58057,"lon":144.9229},{"t":"vc","n":"Wallan Primary School","l":"Wallan","a":"42-48 Queen Street, Wallan","v":1806,"lat":-37.41298,"lon":144.97588},{"t":"vc","n":"1st Wallan Wallan Scout Hall","l":"Wallan Creek","a":"26 Windham Street, Wallan","v":1530,"lat":-37.41725,"lon":144.98241},{"t":"vc","n":"Wallan Secondary College","l":"Wallan South","a":"100 Duke Street, Wallan","v":1637,"lat":-37.41978,"lon":144.97828}];
+  function add(map) {
+    if (!map || map.__venues) return; map.__venues = true;
+    map.createPane('venues'); map.getPane('venues').style.zIndex = 640;
+    const g = L.layerGroup().addTo(map);
+    V.slice().sort((a, b) => (a.t === 'evc') - (b.t === 'evc')).forEach(p => {
+      const evc = p.t === 'evc';
+      const icon = L.divIcon({ className: '', html: `<div class="vpin ${p.t}">${evc ? 'EVC' : 'V'}</div>`, iconSize: evc ? [40, 40] : [21, 21], iconAnchor: evc ? [20, 20] : [10.5, 10.5] });
+      const tip = evc ? `<div class="vtip"><span class="k">EARLY VOTING CENTRE</span><br><b>${p.n}</b><br>${p.a}<br>Open from Wed 18 Nov · VEC estimate ${p.v.toLocaleString()} early votes${p.also ? '<br>Also an election-day voting centre (Sat 28 Nov)' : ''}</div>`
+                      : `<div class="vtip"><span class="k" style="color:#1d2b36">ELECTION-DAY VOTING CENTRE</span><br><b>${p.n}</b> (${p.l})<br>${p.a}<br>Sat 28 Nov · VEC estimate ${p.v.toLocaleString()} votes</div>`;
+      L.marker([p.lat, p.lon], { icon, pane: 'venues', zIndexOffset: evc ? 1000 : 0, keyboard: false }).bindTooltip(tip, { direction: 'top', offset: [0, evc ? -18 : -9] }).addTo(g);
+    });
+    const leg = L.control({ position: 'topright' });
+    leg.onAdd = () => { const d = L.DomUtil.create('div', 'vleg'); d.innerHTML = '<div><span class="vpin evc">EVC</span>Early voting centre</div><div><span class="vpin vc"></span>Election-day voting centre</div>'; return d; };
+    leg.addTo(map);
+  }
+  (window.__lmaps || []).forEach(add);
+  if (window.L) L.Map.addInitHook(function () { add(this); });
+})();
 </script>
 </body>
 </html>
