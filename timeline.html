@@ -1,0 +1,257 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>Campaign Timeline</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@75..100,600..800&family=Public+Sans:wght@400;500;600&display=swap">
+<style>
+:root { --bg:#eef1f3; --card:#fbfcfc; --ink:#18222c; --muted:#5b6874; --line:#d5dce1; --grid:#e4e9ec; --accent:#1f5f73; --light:#a9cfd8;
+  --s1:#9a6b2f; --s2:#1f5f73; --s3:#6b4fa0; --s4:#c0392b; --hero:#163f4c; --heroink:#f2f7f8; --ms:#8a5a00; }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) { --bg:#11171c; --card:#172027; --ink:#e5ebef; --muted:#98a6b1; --line:#2b3741; --grid:#222d35; --accent:#7fc3d6; --light:#2f5b67;
+  --s1:#e0b070; --s2:#7fc3d6; --s3:#b9a2ea; --s4:#ff8a7a; --hero:#0d2a33; --heroink:#e5f2f5; --ms:#f0c060; color-scheme: dark } }
+:root[data-theme="dark"] { --bg:#11171c; --card:#172027; --ink:#e5ebef; --muted:#98a6b1; --line:#2b3741; --grid:#222d35; --accent:#7fc3d6; --light:#2f5b67;
+  --s1:#e0b070; --s2:#7fc3d6; --s3:#b9a2ea; --s4:#ff8a7a; --hero:#0d2a33; --heroink:#e5f2f5; --ms:#f0c060; color-scheme: dark }
+* { box-sizing:border-box }
+body { margin:0; background:var(--bg); color:var(--ink); font:16px/1.5 "Public Sans", "Segoe UI", Arial, sans-serif; }
+.hero { background:var(--hero); color:var(--heroink); position:relative; overflow:hidden }
+.hero::after { content:""; position:absolute; inset:0; background:repeating-linear-gradient(-35deg, transparent 0 22px, rgba(255,255,255,.035) 22px 23px); pointer-events:none }
+.hero .in { max-width:1040px; margin:0 auto; padding:36px 16px 84px; position:relative; z-index:1 }
+.back { color:var(--heroink); opacity:.75; text-decoration:none; font-size:.85rem } .back:hover { opacity:1 }
+.tag { display:block; font:600 .72rem/1 "Public Sans", sans-serif; letter-spacing:.12em; text-transform:uppercase; opacity:.75; margin:14px 0 12px }
+h1 { font:800 clamp(2.2rem, 6.5vw, 3.4rem)/.95 "Archivo", "Arial Narrow", Arial, sans-serif; font-stretch:78%; margin:0 0 12px }
+.hero p { margin:0; max-width:36em; opacity:.85 }
+.pill { display:inline-flex; gap:6px; align-items:center; margin-top:16px; padding:5px 11px; border:1px solid rgba(255,255,255,.25); border-radius:99px; font-size:.82rem }
+.pill::before { content:""; width:7px; height:7px; border-radius:50%; background:#7fe0a8 }
+main { max-width:1040px; margin:-56px auto 0; padding:0 16px 40px; position:relative; z-index:2 }
+.panel { background:var(--card); border:1px solid var(--line); border-radius:14px; padding:18px 20px; margin-bottom:16px }
+.rng { display:flex; gap:4px; margin:0 0 8px } .rng button { font:600 .78rem "Public Sans", sans-serif; padding:4px 10px; border:1px solid var(--line); border-radius:99px; background:transparent; color:var(--muted); cursor:pointer } .rng button[aria-pressed="true"] { background:var(--ink); color:var(--card); border-color:var(--ink) }
+.tw { overflow-x:auto }
+.modes { margin:-6px 0 14px }
+.seg { display:flex; flex-wrap:wrap; gap:6px; margin-bottom:16px; background:var(--card); border:1px solid var(--line); border-radius:12px; padding:6px }
+.seg button { flex:1 1 auto; font:600 .9rem "Public Sans", sans-serif; padding:8px 12px; border:0; border-radius:8px; background:transparent; color:var(--muted); cursor:pointer }
+.seg button[aria-pressed="true"] { background:var(--accent); color:var(--card) }
+.stats { display:grid; grid-template-columns:repeat(4, minmax(0, 1fr)); gap:10px; margin-bottom:16px }
+@media (max-width:760px) { .stats { grid-template-columns:repeat(2, minmax(0, 1fr)) } }
+.stat { background:var(--card); border:1px solid var(--line); border-radius:14px; padding:14px 14px 12px }
+.stat b { display:block; font:800 clamp(1.4rem, 4vw, 1.9rem)/1 "Archivo", Arial, sans-serif; font-stretch:80%; color:var(--accent) }
+.stat span { font-size:.8rem; color:var(--muted); line-height:1.3; display:block; margin-top:6px }
+h2 { font:700 1.15rem "Archivo", Arial, sans-serif; font-stretch:85%; margin:0 0 2px }
+.note { color:var(--muted); font-size:.85rem; margin:0 0 10px }
+svg.chart { display:block; width:100%; overflow:visible; touch-action:pan-y }
+svg text { fill:var(--muted); font:11px "Public Sans", sans-serif }
+.gl { stroke:var(--grid) } .ax { stroke:var(--line) }
+.bnew { fill:var(--accent) } .brep { fill:var(--light) }
+.ms line { stroke:var(--ms); stroke-dasharray:3 3 } .ms text { fill:var(--ms); font-weight:600 }
+.today line { stroke:var(--muted); stroke-dasharray:1 3 } .today text { fill:var(--muted) }
+.hl { fill:var(--ink); opacity:.06 }
+.legend { display:flex; flex-wrap:wrap; gap:8px 16px; font-size:.82rem; color:var(--muted); margin-top:10px }
+.legend span { display:inline-flex; align-items:center; gap:6px } .legend i { display:inline-block; width:18px; height:0; border-top:2.5px dashed; }
+.legend i.box { width:12px; height:12px; border:0; border-radius:3px }
+.custom { display:flex; flex-wrap:wrap; align-items:center; gap:10px 14px; margin-top:12px; padding-top:12px; border-top:1px solid var(--line); font-size:.9rem }
+.custom input { flex:1 1 200px; accent-color:var(--s4) }
+.custom output { font-weight:600; color:var(--s4); min-width:9em }
+#tip { position:fixed; pointer-events:none; background:var(--card); border:1px solid var(--line); border-radius:8px; padding:7px 10px; font-size:.82rem; box-shadow:0 4px 14px rgba(0,0,0,.12); display:none; z-index:9; max-width:260px }
+#tip b { display:block; color:var(--ink) }
+table.proj { width:100%; border-collapse:collapse; font-size:.88rem; margin-top:4px }
+table.proj th, table.proj td { text-align:right; padding:6px 8px; border-bottom:1px solid var(--line); font-variant-numeric:tabular-nums }
+table.proj th:first-child, table.proj td:first-child { text-align:left }
+table.proj th { color:var(--muted); font-weight:600 }
+.sw { display:inline-block; width:10px; height:10px; border-radius:2px; margin-right:6px; vertical-align:middle }
+footer { margin-top:8px; color:var(--muted); font-size:.8rem }
+</style>
+</head>
+<body>
+<header class="hero"><div class="in">
+  <a class="back" href="index.html">&larr; Kalkallo Maps</a>
+  <span class="tag">Kalkallo district doorknock</span>
+  <h1>Campaign Timeline</h1>
+  <p>Doors knocked each week since the campaign began on 1 June, the running total, and where different weekly paces would take us by the last doorknock on Wednesday 25 November.</p>
+  <span class="pill" id="pill">Data to </span>
+</div></header>
+<main>
+  <div class="seg" role="group" aria-label="Area" id="seg"></div>
+  <div class="rng modes" role="group" aria-label="Which doors" id="mode"></div>
+  <div class="stats">
+    <div class="stat"><b id="s-doors">–</b><span id="s-doors-l">doors knocked so far (each address once)</span></div>
+    <div class="stat"><b id="s-rate">–</b><span>doors a week, average of the last 4 weeks</span></div>
+    <div class="stat"><b id="s-days">–</b><span id="s-days-l">doorknocking days left (to Wed 25 Nov)</span></div>
+    <div class="stat"><b id="s-proj">–</b><span id="s-proj-l">doors knocked by 25 Nov at the recent pace</span></div>
+  </div>
+  <section class="panel">
+    <h2>Doors knocked each week</h2>
+    <p class="note">Each bar splits into doors knocked for the first time and doors revisited. Dashed lines: weekly pace in each scenario.</p>
+    <div class="rng" data-r></div>
+    <svg class="chart" id="wk" role="img" aria-label="Doors knocked each week"></svg>
+    <div class="legend" id="leg1"></div>
+  </section>
+  <section class="panel">
+    <h2>Total doors knocked</h2>
+    <p class="note">Every address counted once (each unit separately). Dashed lines project the total to 25 November in each scenario.</p>
+    <div class="rng" data-r></div>
+    <svg class="chart" id="cum" role="img" aria-label="Running total of doors knocked"></svg>
+    <div class="legend" id="leg2"></div>
+    <div class="custom"><label for="rate">Try your own pace:</label><input type="range" id="rate" min="200" max="3000" step="50"><output id="rate-o" for="rate"></output></div>
+  </section>
+  <section class="panel">
+    <h2>Where each pace takes us</h2>
+    <p class="note">Projected from <span class="lastd"></span>. Doors knocked counts revisits; new doors are first-time addresses, using the share of new doors over the last 4 weeks.</p>
+    <div class="tw"><table class="proj" id="ptab"></table></div>
+  </section>
+  <footer>Counts start on 1 June 2026; earlier knocks are left out, so a door first knocked before then counts as new when knocked again in this campaign. "All app addresses" counts every address in the app, including ones not on the electoral roll; "Electoral roll only" counts enrolled homes, each unit separately; suburb is the address's suburb. Weeks run Monday to Sunday. The last week (23 to 25 Nov) is three weekdays, which have carried about <span id="wdshare"></span> of a normal week's knocking. Key dates: early voting opens Wed 18 Nov, last doorknock Wed 25 Nov, election day Sat 28 Nov.</footer>
+</main>
+<div id="tip"></div>
+<script>
+const D = {"last":"2026-11-04","weeks":["2026-06-01","2026-06-08","2026-06-15","2026-06-22","2026-06-29","2026-07-06","2026-07-13","2026-07-20","2026-07-27","2026-08-03","2026-08-10","2026-08-17","2026-08-24","2026-08-31","2026-09-07","2026-09-14","2026-09-21","2026-09-28","2026-10-05","2026-10-12","2026-10-19","2026-10-26","2026-11-02","2026-11-09","2026-11-16","2026-11-23"],"days":["2026-06-01","2026-06-02","2026-06-03","2026-06-04","2026-06-05","2026-06-06","2026-06-07","2026-06-08","2026-06-09","2026-06-10","2026-06-11","2026-06-12","2026-06-13","2026-06-14","2026-06-15","2026-06-16","2026-06-17","2026-06-18","2026-06-19","2026-06-20","2026-06-21","2026-06-22","2026-06-23","2026-06-24","2026-06-25","2026-06-26","2026-06-27","2026-06-28","2026-06-29","2026-06-30","2026-07-01","2026-07-02","2026-07-03","2026-07-04","2026-07-05","2026-07-06","2026-07-07","2026-07-08","2026-07-09","2026-07-10","2026-07-11","2026-07-12","2026-07-13","2026-07-14","2026-07-15","2026-07-16","2026-07-17","2026-07-18","2026-07-19","2026-07-20","2026-07-21","2026-07-22","2026-07-23","2026-07-24","2026-07-25","2026-07-26","2026-07-27","2026-07-28","2026-07-29","2026-07-30","2026-07-31","2026-08-01","2026-08-02","2026-08-03","2026-08-04","2026-08-05","2026-08-06","2026-08-07","2026-08-08","2026-08-09","2026-08-10","2026-08-11","2026-08-12","2026-08-13","2026-08-14","2026-08-15","2026-08-16","2026-08-17","2026-08-18","2026-08-19","2026-08-20","2026-08-21","2026-08-22","2026-08-23","2026-08-24","2026-08-25","2026-08-26","2026-08-27","2026-08-28","2026-08-29","2026-08-30","2026-08-31","2026-09-01","2026-09-02","2026-09-03","2026-09-04","2026-09-05","2026-09-06","2026-09-07","2026-09-08","2026-09-09","2026-09-10","2026-09-11","2026-09-12","2026-09-13","2026-09-14","2026-09-15","2026-09-16","2026-09-17","2026-09-18","2026-09-19","2026-09-20","2026-09-21","2026-09-22","2026-09-23","2026-09-24","2026-09-25","2026-09-26","2026-09-27","2026-09-28","2026-09-29","2026-09-30","2026-10-01","2026-10-02","2026-10-03","2026-10-04","2026-10-05","2026-10-06","2026-10-07","2026-10-08","2026-10-09","2026-10-10","2026-10-11","2026-10-12","2026-10-13","2026-10-14","2026-10-15","2026-10-16","2026-10-17","2026-10-18","2026-10-19","2026-10-20","2026-10-21","2026-10-22","2026-10-23","2026-10-24","2026-10-25","2026-10-26","2026-10-27","2026-10-28","2026-10-29","2026-10-30","2026-10-31","2026-11-01","2026-11-02","2026-11-03","2026-11-04"],"dow":[0.0,0.0891,0.088,0.2687,0.0442,0.119,0.3909],"series":{"District":{"knocks":[0,0,0,0,0,0,0,0,0,0,0,0,0,0,31,0,150,1688,1463,474,327,320,295,0,0,0],"doors":[0,0,0,0,0,0,0,0,0,0,0,0,0,0,31,0,142,1605,1404,454,312,310,281,0,0,0],"new":[0,0,0,0,0,0,0,0,0,0,0,0,0,0,31,0,142,1605,1404,454,312,310,279,0,0,0],"cum":[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,31,31,31,31,31,31,31,31,31,31,31,68,173,173,173,173,252,372,372,372,372,1778,1778,1778,1778,2972,3069,3084,3182,3182,3182,3343,3343,3343,3544,3636,3636,3776,3776,3776,3776,3948,3948,3948,3948,3962,3962,3962,4115,4258,4258,4429,4537],"rate":620,"newshare":1.0,"app":46011,"homes":33825,"total_knocks":4748,"total_doors":4537},"Craigieburn":{"knocks":[0,0,0,0,0,0,0,0,0,0,0,0,0,0,31,0,37,1688,1355,0,327,173,0,0,0,0],"doors":[0,0,0,0,0,0,0,0,0,0,0,0,0,0,31,0,37,1605,1306,0,312,167,0,0,0,0],"new":[0,0,0,0,0,0,0,0,0,0,0,0,0,0,31,0,37,1605,1306,0,312,167,0,0,0,0],"cum":[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,31,31,31,31,31,31,31,31,31,31,31,68,68,68,68,68,147,267,267,267,267,1673,1673,1673,1673,2867,2964,2979,2979,2979,2979,2979,2979,2979,2979,2979,2979,3119,3119,3119,3119,3291,3291,3291,3291,3305,3305,3305,3458,3458,3458,3458,3458],"rate":446,"newshare":1.0,"app":20667,"homes":15585,"total_knocks":3611,"total_doors":3458},"Mickleham":{"knocks":[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,108,377,0,0,0,0,0,0],"doors":[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,98,362,0,0,0,0,0,0],"new":[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,98,362,0,0,0,0,0,0],"cum":[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,98,98,98,259,259,259,460,460,460,460,460,460,460,460,460,460,460,460,460,460,460,460,460,460,460],"rate":115,"newshare":1.0,"app":9945,"homes":7646,"total_knocks":485,"total_doors":460},"Kalkallo":{"knocks":[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,113,0,0,97,0,0,185,0,0,0],"doors":[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,105,0,0,92,0,0,173,0,0,0],"new":[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,105,0,0,92,0,0,171,0,0,0],"cum":[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,105,105,105,105,105,105,105,105,105,105,105,105,105,105,105,105,105,105,105,105,105,105,105,197,197,197,197,197,197,197,197,197,197,197,197,197,197,197,197,368,368],"rate":23,"newshare":1.0,"app":4938,"homes":3128,"total_knocks":395,"total_doors":368},"Beveridge":{"knocks":[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,147,110,0,0,0],"doors":[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,143,108,0,0,0],"new":[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,143,108,0,0,0],"cum":[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,143,143,143,251],"rate":36,"newshare":1.0,"app":4579,"homes":2801,"total_knocks":257,"total_doors":251},"Wallan":{"knocks":[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],"doors":[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],"new":[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],"cum":[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],"rate":0,"newshare":0.0,"app":5882,"homes":4575,"total_knocks":0,"total_doors":0},"District|roll":{"knocks":[0,0,0,0,0,0,0,0,0,0,0,0,0,0,19,0,107,1248,1079,396,256,242,227,0,0,0],"doors":[0,0,0,0,0,0,0,0,0,0,0,0,0,0,19,0,100,1184,1032,378,243,237,215,0,0,0],"new":[0,0,0,0,0,0,0,0,0,0,0,0,0,0,19,0,100,1184,1032,378,243,237,213,0,0,0],"cum":[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,19,19,19,19,19,19,19,19,19,19,19,41,119,119,119,119,184,266,266,266,266,1303,1303,1303,1303,2253,2253,2253,2335,2335,2335,2465,2465,2465,2631,2713,2713,2817,2817,2817,2817,2956,2956,2956,2956,2956,2956,2956,3083,3193,3193,3320,3406],"rate":472,"newshare":1.0,"app":46011,"homes":33825,"total_knocks":3574,"total_doors":3406},"Craigieburn|roll":{"knocks":[0,0,0,0,0,0,0,0,0,0,0,0,0,0,19,0,22,1248,989,0,256,129,0,0,0,0],"doors":[0,0,0,0,0,0,0,0,0,0,0,0,0,0,19,0,22,1184,950,0,243,127,0,0,0,0],"new":[0,0,0,0,0,0,0,0,0,0,0,0,0,0,19,0,22,1184,950,0,243,127,0,0,0,0],"cum":[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,19,19,19,19,19,19,19,19,19,19,19,41,41,41,41,41,106,188,188,188,188,1225,1225,1225,1225,2175,2175,2175,2175,2175,2175,2175,2175,2175,2175,2175,2175,2279,2279,2279,2279,2418,2418,2418,2418,2418,2418,2418,2545,2545,2545,2545,2545],"rate":330,"newshare":1.0,"app":20667,"homes":15585,"total_knocks":2663,"total_doors":2545},"Mickleham|roll":{"knocks":[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,90,309,0,0,0,0,0,0],"doors":[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,82,296,0,0,0,0,0,0],"new":[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,82,296,0,0,0,0,0,0],"cum":[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,82,82,82,212,212,212,378,378,378,378,378,378,378,378,378,378,378,378,378,378,378,378,378,378,378],"rate":94,"newshare":1.0,"app":9945,"homes":7646,"total_knocks":399,"total_doors":378},"Kalkallo|roll":{"knocks":[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,85,0,0,87,0,0,139,0,0,0],"doors":[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,78,0,0,82,0,0,129,0,0,0],"new":[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,78,0,0,82,0,0,127,0,0,0],"cum":[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,78,78,78,78,78,78,78,78,78,78,78,78,78,78,78,78,78,78,78,78,78,78,78,160,160,160,160,160,160,160,160,160,160,160,160,160,160,160,160,287,287],"rate":20,"newshare":1.0,"app":4938,"homes":3128,"total_knocks":311,"total_doors":287},"Beveridge|roll":{"knocks":[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,113,88,0,0,0],"doors":[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,110,86,0,0,0],"new":[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,110,86,0,0,0],"cum":[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,110,110,110,196],"rate":28,"newshare":1.0,"app":4579,"homes":2801,"total_knocks":201,"total_doors":196},"Wallan|roll":{"knocks":[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],"doors":[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],"new":[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],"cum":[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],"rate":0,"newshare":0.0,"app":5882,"homes":4575,"total_knocks":0,"total_doors":0}}};
+const SUBS = ['District','Craigieburn','Mickleham','Kalkallo','Beveridge','Wallan'];
+const MS = [['2026-11-18','Early voting'],['2026-11-25','Last doorknock'],['2026-11-28','Election day']];
+const END = '2026-11-25', ELECTION = '2026-11-28';
+const fmt = n => Math.round(n).toLocaleString('en-AU');
+const day = s => new Date(s + 'T00:00:00');
+const addDays = (d, n) => { const x = new Date(d); x.setDate(x.getDate() + n); return x; };
+const iso = d => d.getFullYear() + '-' + String(d.getMonth()+1).padStart(2,'0') + '-' + String(d.getDate()).padStart(2,'0');
+const short = d => d.toLocaleDateString('en-AU', {day:'numeric', month:'short'});
+const NS = 'http://www.w3.org/2000/svg';
+function el(tag, attrs, parent, text) { const e = document.createElementNS(NS, tag); for (const k in attrs) e.setAttribute(k, attrs[k]); if (text != null) e.textContent = text; if (parent) parent.appendChild(e); return e; }
+const css = v => getComputedStyle(document.documentElement).getPropertyValue(v).trim();
+let cur = 'District', custom = null, range = 'aug', mode = 'all';
+const key = n => n + (mode === 'roll' ? '|roll' : ''), DS = () => D.series[key('District')];
+const MODES = [['all','All app addresses'],['roll','Electoral roll only']];
+const RANGES = [['aug','Since August'],['all','Whole campaign (from 1 June)']];
+try { const s = localStorage.getItem('ktl-sub'); if (SUBS.includes(s)) cur = s; const r = localStorage.getItem('ktl-rng'); if (r === 'all' || r === 'aug') range = r; const m = localStorage.getItem('ktl-mode'); if (m === 'all' || m === 'roll') mode = m; } catch (e) {}
+const startDay = () => range === 'aug' ? day('2026-08-03') : day(D.weeks[0]);
+function size(svg, h) { const W = Math.max(300, Math.round(svg.parentNode.clientWidth)); const H = W < 600 ? Math.round(h * 0.85) : h; svg.setAttribute('viewBox', '0 0 ' + W + ' ' + H); svg.setAttribute('height', H); return [W, H]; }
+function markers(svg, xf, t, b) {
+  const all = [[last, 'Data to ' + short(last), 'today']].concat(MS.map(([d, l]) => [day(d), l + ', ' + short(day(d)), 'ms']));
+  all.forEach(([d, l, c], i) => { const xx = c === 'today' ? xf(addDays(last, 1)) : xf(d); const g = el('g', {class:c}, svg); el('line', {x1:xx, x2:xx, y1:t - 52 + i * 13 + 3, y2:b}, g); el('text', {x:xx - 4, y:t - 52 + i * 13 + 10, 'text-anchor':'end'}, g, l); });
+}
+
+const last = day(D.last);
+const wdShare = D.dow[0] + D.dow[1] + D.dow[2];
+document.getElementById('pill').textContent = 'Data to ' + last.toLocaleDateString('en-AU', {day:'numeric', month:'short', year:'numeric'});
+document.querySelectorAll('.lastd').forEach(e => e.textContent = short(last));
+document.getElementById('wdshare').textContent = Math.round(wdShare * 100) + '%';
+
+function scenarios(S) {
+  const share = S.rate / DS().rate;
+  const base = [[Math.round(DS().rate * 0.5 / 50) * 50, 'Slower'], [DS().rate, 'Recent pace'], [Math.round(DS().rate * 1.5 / 50) * 50, 'Push']];
+  const out = base.map(([r, n], i) => ({ name: n, rate: (cur === 'District' ? r : r * share), color: css('--s' + (i + 1)) }));
+  out[1].rate = S.rate;
+  if (custom != null) out.push({ name: 'Your pace', rate: custom * (cur === 'District' ? 1 : share), color: css('--s4'), custom: true });
+  return out;
+}
+// daily projected doors from the day after the data to END
+function projDays(rate) { const res = []; for (let d = addDays(last, 1); d <= day(END); d = addDays(d, 1)) res.push([d, rate * D.dow[(d.getDay() + 6) % 7]]); return res; }
+
+function drawWeekly(S, sc) {
+  const svg = document.getElementById('wk'); svg.innerHTML = '';
+  const [W, H] = size(svg, 360), L = 48, R = 8, T = 62, B = 30;
+  const i0 = D.weeks.findIndex(w => day(w) >= startDay());
+  const wk = D.weeks.slice(i0).map(day), n = wk.length, bw = (W - L - R) / n;
+  S = Object.assign({}, S, {doors: S.doors.slice(i0), new: S.new.slice(i0), knocks: S.knocks.slice(i0)});
+  const future = wk.map(w => w > last);
+  const proj = sc.map(s => wk.map((w, i) => { if (!future[i]) return null; let v = 0; for (let k = 0; k < 7; k++) { const d = addDays(w, k); if (d > last && d <= day(END)) v += s.rate * D.dow[k]; } return v; }));
+  let max = Math.max(...S.doors, ...proj.flat().filter(v => v != null)); max = niceMax(max);
+  const y = v => T + (H - T - B) * (1 - v / max), x = i => L + i * bw;
+  ticks(max).forEach(t => { el('line', {x1:L, x2:W-R, y1:y(t), y2:y(t), class:'gl'}, svg); el('text', {x:L-6, y:y(t)+4, 'text-anchor':'end'}, svg, fmt(t)); });
+  wk.forEach((w, i) => {
+    if (future[i]) return;
+    const nw = S.new[i], rep = S.doors[i] - S.new[i];
+    el('rect', {x:x(i)+bw*0.12, width:bw*0.76, y:y(nw), height:y(0)-y(nw), class:'bnew'}, svg);
+    if (rep > 0) el('rect', {x:x(i)+bw*0.12, width:bw*0.76, y:y(nw+rep), height:y(nw)-y(nw+rep), class:'brep'}, svg);
+  });
+  sc.forEach((s, j) => proj[j].forEach((v, i) => { if (v == null) return; el('line', {x1:x(i)+bw*0.08, x2:x(i)+bw*0.92, y1:y(v), y2:y(v), stroke:s.color, 'stroke-width':2.5, 'stroke-dasharray':'5 3'}, svg); }));
+  el('line', {x1:L, x2:W-R, y1:y(0), y2:y(0), class:'ax'}, svg);
+  // month labels
+  let pm = -1; wk.forEach((w, i) => { if (w.getMonth() !== pm && !(n > 26 && W < 600 && w.getMonth() % 2)) { pm = w.getMonth(); el('text', {x:x(i)+2, y:H-B+16}, svg, w.toLocaleDateString('en-AU', {month:'short'})); } });
+  const xd = d => { const i = (d - wk[0]) / 864e5 / 7; return L + i * bw; };
+  markers(svg, xd, T, H - B);
+  // hover
+  const hl = el('rect', {class:'hl', y:T, height:H-T-B, width:bw, x:0, visibility:'hidden'}, svg);
+  hover(svg, W, (px) => { const i = Math.max(0, Math.min(n - 1, Math.floor((px - L) / bw))); hl.setAttribute('x', x(i)); hl.setAttribute('visibility','visible');
+    const w = wk[i]; let h = '<b>Week of ' + short(w) + '</b>';
+    if (!future[i]) h += fmt(S.doors[i]) + ' doors (' + fmt(S.new[i]) + ' new)<br>' + fmt(S.knocks[i]) + ' knocks';
+    else { if (w > day(END)) h += 'No doorknocking'; else sc.forEach((s, j) => h += '<span class="sw" style="background:' + s.color + '"></span>' + s.name + ': ' + fmt(proj[j][i]) + '<br>'); }
+    return h; }, () => hl.setAttribute('visibility','hidden'));
+}
+
+function drawCum(S, sc) {
+  const svg = document.getElementById('cum'); svg.innerHTML = '';
+  const [W, H] = size(svg, 380), L = 52, R = 52, T = 62, B = 30;
+  const d0 = startDay(), d1 = day(ELECTION);
+  const span = (d1 - d0) / 864e5;
+  const x = d => L + (W - L - R) * ((d - d0) / 864e5) / span;
+  const proj = sc.map(s => { let c = S.cum[S.cum.length - 1]; const pts = [[last, c]]; projDays(s.rate).forEach(([d, v]) => { c += v * S.newshare; pts.push([d, c]); }); pts.push([d1, c]); return pts; });
+  const max = niceMax(Math.max(S.cum[S.cum.length - 1], ...proj.map(p => p[p.length - 1][1])));
+  const y = v => T + (H - T - B) * (1 - v / max);
+  ticks(max).forEach(t => { el('line', {x1:L, x2:W-R, y1:y(t), y2:y(t), class:'gl'}, svg); el('text', {x:L-6, y:y(t)+4, 'text-anchor':'end'}, svg, fmt(t)); });
+  for (let m = new Date(d0.getFullYear(), d0.getMonth() + 1, 1); m <= d1; m = new Date(m.getFullYear(), m.getMonth() + 1, 1)) {
+    if (W < 600 && range === 'all' && m.getMonth() % 2) continue; el('line', {x1:x(m), x2:x(m), y1:H-B, y2:H-B+4, class:'ax'}, svg); el('text', {x:x(m)+3, y:H-B+16}, svg, m.toLocaleDateString('en-AU', {month:'short'})); }
+  el('line', {x1:L, x2:W-R, y1:y(0), y2:y(0), class:'ax'}, svg);
+  const off = Math.round((d0 - day(D.days[0])) / 864e5);
+  const pts = S.cum.slice(off).map((v, i) => x(addDays(d0, i)).toFixed(1) + ',' + y(v).toFixed(1));
+  el('path', {d:'M' + x(d0) + ',' + y(0) + ' L' + pts.join(' L') + ' L' + x(last) + ',' + y(0) + 'Z', fill:css('--accent'), opacity:.12}, svg);
+  el('polyline', {points:pts.join(' '), fill:'none', stroke:css('--accent'), 'stroke-width':2.5, 'stroke-linejoin':'round'}, svg);
+  const ends = [];
+  sc.forEach((s, j) => { el('polyline', {points:proj[j].map(([d, v]) => x(d).toFixed(1) + ',' + y(v).toFixed(1)).join(' '), fill:'none', stroke:s.color, 'stroke-width':2.2, 'stroke-dasharray':'6 4'}, svg); ends.push([proj[j][proj[j].length - 1][1], s]); });
+  // end labels, nudged apart
+  ends.sort((a, b) => b[0] - a[0]); let prev = -1e9;
+  ends.forEach(([v, s]) => { let yy = Math.max(y(v) + 4, prev + 14); prev = yy; el('text', {x:W-R+4, y:yy, style:'fill:' + s.color + ';font-weight:600'}, svg, fmt(v)); });
+  el('circle', {cx:x(last), cy:y(S.cum[S.cum.length - 1]), r:4, fill:css('--accent')}, svg);
+  markers(svg, x, T, H - B);
+  const dot = el('circle', {r:4, fill:css('--ink'), cx:0, cy:0, visibility:'hidden'}, svg);
+  hover(svg, W, (px) => { const f = Math.max(0, Math.min(1, (px - L) / (W - L - R))); const d = addDays(d0, Math.round(f * span)); if (d < d0) return '';
+    if (d <= last) { const i = Math.round((d - d0) / 864e5); const v = S.cum[Math.min(i, S.cum.length - 1)]; dot.setAttribute('cx', x(d)); dot.setAttribute('cy', y(v)); dot.setAttribute('visibility', 'visible'); return '<b>' + short(d) + '</b>' + fmt(v) + ' doors knocked'; }
+    dot.setAttribute('visibility', 'hidden'); let h = '<b>' + short(d) + ' (projected)</b>';
+    sc.forEach((s, j) => { const p = proj[j]; let v = p[0][1]; for (const [dd, vv] of p) { if (dd <= d) v = vv; } h += '<span class="sw" style="background:' + s.color + '"></span>' + s.name + ': ' + fmt(v) + '<br>'; });
+    return h; }, () => dot.setAttribute('visibility', 'hidden'));
+}
+
+function niceMax(v) { const p = Math.pow(10, Math.floor(Math.log10(v))); for (const m of [1, 1.5, 2, 2.5, 3, 4, 5, 6, 8, 10]) if (m * p >= v * 1.05) return m * p; return 10 * p; }
+function ticks(max) { const p = Math.pow(10, Math.floor(Math.log10(max))); let st = p; for (const m of [0.2, 0.25, 0.5, 1, 2]) { if (max / (m * p) <= 6) { st = m * p; break; } } const out = []; for (let t = 0; t <= max + 1e-9; t += st) out.push(t); return out; }
+function hover(svg, W, html, leave) {
+  const tip = document.getElementById('tip');
+  const move = ev => { const r = svg.getBoundingClientRect(); const e = ev.touches ? ev.touches[0] : ev; const px = (e.clientX - r.left) / r.width * svg.viewBox.baseVal.width;
+    tip.innerHTML = html(px); tip.style.display = 'block';
+    const tw = tip.offsetWidth; let lx = e.clientX + 14; if (lx + tw > window.innerWidth - 8) lx = e.clientX - tw - 14; tip.style.left = Math.max(8, lx) + 'px'; tip.style.top = (e.clientY + 14) + 'px'; };
+  svg.onmousemove = move; svg.ontouchstart = move; svg.ontouchmove = move;
+  svg.onmouseleave = () => { tip.style.display = 'none'; leave(); };
+}
+
+function render() {
+  const S = D.series[key(cur)], sc = scenarios(S);
+  document.querySelectorAll('#seg button').forEach(b => b.setAttribute('aria-pressed', b.dataset.s === cur));
+  document.querySelectorAll('.rng button').forEach(b => b.setAttribute('aria-pressed', b.dataset.r === range));
+  document.getElementById('s-doors').textContent = fmt(S.total_doors);
+  document.getElementById('s-doors-l').textContent = mode === 'roll' ? 'enrolled homes knocked so far, of ' + fmt(S.homes) + ' (each unit separately)' : 'doors knocked so far (each address once)';
+  document.getElementById('s-proj-l').textContent = (mode === 'roll' ? 'enrolled homes' : 'doors') + ' knocked by 25 Nov at the recent pace';
+  document.querySelectorAll('#mode button').forEach(b => b.setAttribute('aria-pressed', b.dataset.m === mode));
+  document.getElementById('s-rate').textContent = fmt(S.rate);
+  let dl = 0; for (let d = addDays(last, 1); d <= day(END); d = addDays(d, 1)) dl++;
+  document.getElementById('s-days').textContent = dl;
+  const recentNew = projDays(S.rate).reduce((a, [, v]) => a + v, 0) * S.newshare;
+  document.getElementById('s-proj').textContent = fmt(S.total_doors + recentNew);
+  drawWeekly(S, sc); drawCum(S, sc);
+  const leg = '<span><i class="box" style="background:' + css('--accent') + '"></i>New doors</span><span><i class="box" style="background:' + css('--light') + '"></i>Revisits</span>' +
+    sc.map(s => '<span><i style="border-color:' + s.color + '"></i>' + s.name + ' (' + fmt(s.rate) + ' a week)</span>').join('');
+  document.getElementById('leg1').innerHTML = leg;
+  document.getElementById('leg2').innerHTML = '<span><i class="box" style="background:' + css('--accent') + '"></i>Actual</span>' + sc.map(s => '<span><i style="border-color:' + s.color + '"></i>' + s.name + '</span>').join('');
+  const days = projDays(1); const ev = days.filter(([d]) => d < day('2026-11-18')).reduce((a, [, v]) => a + v, 0), all = days.reduce((a, [, v]) => a + v, 0);
+  let t = '<tr><th>Scenario</th><th>A week</th><th>Knocked ' + short(addDays(last,1)) + '–25 Nov</th><th>New doors</th><th>Total by 17 Nov</th><th>Total by 25 Nov</th></tr>';
+  sc.forEach(s => { t += '<tr><td><span class="sw" style="background:' + s.color + '"></span>' + s.name + '</td><td>' + fmt(s.rate) + '</td><td>' + fmt(s.rate * all) + '</td><td>' + fmt(s.rate * all * S.newshare) + '</td><td>' + fmt(S.total_doors + s.rate * ev * S.newshare) + '</td><td>' + fmt(S.total_doors + s.rate * all * S.newshare) + '</td></tr>'; });
+  document.getElementById('ptab').innerHTML = t;
+  const r = document.getElementById('rate'); document.getElementById('rate-o').textContent = custom == null ? 'drag to add a line' : fmt(custom * (cur === 'District' ? 1 : S.rate / DS().rate)) + ' a week';
+}
+const seg = document.getElementById('seg');
+SUBS.forEach(s => { const b = document.createElement('button'); b.textContent = s; b.dataset.s = s; b.onclick = () => { cur = s; try { localStorage.setItem('ktl-sub', s); } catch (e) {} render(); }; seg.appendChild(b); });
+document.querySelectorAll('[data-r]').forEach(box => RANGES.forEach(([k, l]) => { const b = document.createElement('button'); b.textContent = l; b.dataset.r = k; b.onclick = () => { range = k; try { localStorage.setItem('ktl-rng', k); } catch (e) {} render(); }; box.appendChild(b); }));
+MODES.forEach(([k, l]) => { const b = document.createElement('button'); b.textContent = l; b.dataset.m = k; b.onclick = () => { mode = k; try { localStorage.setItem('ktl-mode', k); } catch (e) {} render(); }; document.getElementById('mode').appendChild(b); });
+const rate = document.getElementById('rate'); rate.value = 1000;
+rate.oninput = () => { custom = +rate.value; render(); };
+render();
+window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', render);
+let rz; let lastW = innerWidth; addEventListener('resize', () => { if (innerWidth === lastW) return; lastW = innerWidth; clearTimeout(rz); rz = setTimeout(render, 150); });
+</script>
+</body>
+</html>
